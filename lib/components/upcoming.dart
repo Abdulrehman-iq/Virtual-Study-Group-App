@@ -7,6 +7,8 @@ class Upcoming extends StatelessWidget {
     {'title': 'History Discussion', 'time': 'Friday, 5:00 PM'},
   ];
 
+  Upcoming({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -14,7 +16,7 @@ class Upcoming extends StatelessWidget {
       children: [
         ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: sessions.length,
           itemBuilder: (context, index) {
             final session = sessions[index];
@@ -27,17 +29,17 @@ class Upcoming extends StatelessWidget {
 
   Widget _buildSessionCard(String title, String time) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
       child: Card(
         elevation: 2,
         child: ListTile(
-          leading: Icon(Icons.event, color: Colors.blue),
+          leading: const Icon(Icons.event, color: Colors.blue),
           title: Text(
             title,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(time),
-          trailing: Icon(Icons.arrow_forward_ios),
+          trailing: const Icon(Icons.arrow_forward_ios),
           onTap: () {
             // Add navigation or action for session card
           },

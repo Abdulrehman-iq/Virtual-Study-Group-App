@@ -5,6 +5,8 @@ import '../components/activity.dart';
 import '../components/announcements.dart';
 
 class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
+
   @override
   _DashboardState createState() => _DashboardState();
 }
@@ -16,10 +18,10 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Study Dashboard'),
+        title: const Text('Study Dashboard'),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications),
             onPressed: () {},
           ),
         ],
@@ -32,7 +34,7 @@ class _DashboardState extends State<Dashboard> {
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -57,7 +59,7 @@ class _DashboardState extends State<Dashboard> {
             _buildDrawerItem(
               icon: Icons.groups,
               title: 'Study Rooms',
-              onTap: () => _updateScreen(StudyRooms()),
+              onTap: () => _updateScreen(StudyRoom()),
             ),
             _buildDrawerItem(
               icon: Icons.event,
@@ -72,13 +74,14 @@ class _DashboardState extends State<Dashboard> {
             _buildDrawerItem(
               icon: Icons.announcement,
               title: 'Announcements',
-              onTap: () => _updateScreen(Announcements()),
+              onTap: () => _updateScreen(
+                  Announcements()), // Changed from AnnouncementsScreen
             ),
           ],
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: _currentScreen,
       ),
     );
@@ -93,7 +96,7 @@ class _DashboardState extends State<Dashboard> {
       leading: Icon(icon),
       title: Text(title),
       onTap: () {
-        Navigator.pop(context); // Close drawer
+        Navigator.pop(context);
         onTap();
       },
     );
@@ -118,15 +121,15 @@ class _WelcomeScreen extends StatelessWidget {
             size: 80,
             color: Theme.of(context).primaryColor,
           ),
-          SizedBox(height: 24),
-          Text(
+          const SizedBox(height: 24),
+          const Text(
             'Welcome to Virtual Study Group',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'Open the menu to explore study resources,\njoin rooms, and connect with peers',
             textAlign: TextAlign.center,

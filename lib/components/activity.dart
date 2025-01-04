@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class Activity extends StatelessWidget {
+  const Activity({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
+        const Padding(
           padding: EdgeInsets.all(16.0),
           child: Text(
             'Recent Activity',
@@ -15,7 +17,7 @@ class Activity extends StatelessWidget {
         ),
         ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: 3,
           itemBuilder: (context, index) => _buildActivityItem(index),
         ),
@@ -30,7 +32,7 @@ class Activity extends StatelessWidget {
         child: Text('U${index + 1}'),
       ),
       title: Text('User ${index + 1} joined Math Group'),
-      subtitle: Text('2 hours ago'),
+      subtitle: const Text('2 hours ago'),
     );
   }
 }

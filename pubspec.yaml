@@ -1,25 +1,39 @@
 name: virtual_study_group_app
-description: "A new Flutter project."
+description: "A Virtual Study Group Application"
 publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.6.0
+  sdk: '>=3.2.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.1.0
   cupertino_icons: ^1.0.8
-  cloud_firestore: ^4.0.0
-  firebase_auth: ^4.0.0
-  firebase_storage: ^11.0.0
+  
+  # Database
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  path_provider: ^2.1.1
+  
+  # UI Components
+  flutter_staggered_grid_view: ^0.7.0
+  cached_network_image: ^3.3.0
+  
+  # Media
+  image_picker: ^0.8.5
+  
+  # Utils
+  intl: ^0.19.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^3.0.1
 
 flutter:
   uses-material-design: true
+  
+  
