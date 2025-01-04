@@ -1,11 +1,11 @@
 name: virtual_study_group_app
-description: "A Virtual Study Group Application"
-publish_to: 'none'
+description: A Virtual Study Group Application
+publish_to: none
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: ">=3.2.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -35,5 +35,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  
-  

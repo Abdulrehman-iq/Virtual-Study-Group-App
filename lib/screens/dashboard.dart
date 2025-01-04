@@ -3,6 +3,7 @@ import '../components/study_rooms.dart';
 import '../components/upcoming.dart';
 import '../components/activity.dart';
 import '../components/announcements.dart';
+import '../components/subjects.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -12,7 +13,14 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  Widget _currentScreen = _WelcomeScreen();
+  // Default screen
+  Widget _currentScreen = const _WelcomeScreen();
+
+  // Drawer navigation
+  void _selectScreen(Widget screen) {
+    setState(() => _currentScreen = screen);
+    Navigator.pop(context); // Close drawer
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,115 +38,63 @@ class _DashboardState extends State<Dashboard> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
+                color: Colors.blue,
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Virtual Study Group',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Learn Together, Grow Together',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
+              child: Text(
+                'Navigation Menu',
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
-            _buildDrawerItem(
-              icon: Icons.groups,
-              title: 'Study Rooms',
-              onTap: () => _updateScreen(StudyRoom()),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () => _selectScreen(const _WelcomeScreen()),
             ),
-            _buildDrawerItem(
-              icon: Icons.event,
-              title: 'Upcoming Sessions',
-              onTap: () => _updateScreen(Upcoming()),
+            ListTile(
+              leading: const Icon(Icons.group),
+              title: const Text('Study Rooms'),
+              onTap: () => _selectScreen(const StudyRoom()),
             ),
-            _buildDrawerItem(
-              icon: Icons.history,
-              title: 'Recent Activity',
-              onTap: () => _updateScreen(Activity()),
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: const Text('Upcoming'),
+              onTap: () => _selectScreen(const Upcoming()),
             ),
-            _buildDrawerItem(
-              icon: Icons.announcement,
-              title: 'Announcements',
-              onTap: () => _updateScreen(
-                  Announcements()), // Changed from AnnouncementsScreen
+            ListTile(
+              leading: const Icon(Icons.fitness_center),
+              title: const Text('Activity'),
+              onTap: () => _selectScreen(const Activity()),
+            ),
+            ListTile(
+              leading: const Icon(Icons.announcement),
+              title: const Text('Announcements'),
+              onTap: () => _selectScreen(const Announcements()),
+            ),
+            ListTile(
+              leading: const Icon(Icons.menu_book),
+              title: const Text('Programming Courses'),
+              onTap: () => _selectScreen(const SubjectsScreen()),
             ),
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _currentScreen,
-      ),
+      body: _currentScreen,
     );
-  }
-
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      onTap: () {
-        Navigator.pop(context);
-        onTap();
-      },
-    );
-  }
-
-  void _updateScreen(Widget screen) {
-    setState(() {
-      _currentScreen = screen;
-    });
   }
 }
 
+// Simple welcome screen placeholder
 class _WelcomeScreen extends StatelessWidget {
+  const _WelcomeScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.school,
-            size: 80,
-            color: Theme.of(context).primaryColor,
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'Welcome to Virtual Study Group',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Open the menu to explore study resources,\njoin rooms, and connect with peers',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
+    return const Center(
+      child: Text(
+        'Welcome to the Dashboard',
+        style: TextStyle(fontSize: 20),
       ),
     );
   }
