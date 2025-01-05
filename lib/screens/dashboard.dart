@@ -6,6 +6,11 @@ import '../components/announcements.dart';
 import '../components/subjects.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+// Use alias for AuthService to avoid conflict
+import 'package:virtual_study_group_app/auth_service/auth_service.dart'
+    as auth_service;
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -16,10 +21,73 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   Widget _currentScreen = const _WelcomeScreen();
+  final auth_service.AuthService _authService =
+      auth_service.AuthService(); // Use alias here
 
   void _selectScreen(Widget screen) {
     setState(() => _currentScreen = screen);
     Navigator.pop(context);
+  }
+
+  Future<void> _handleLogout() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  await _authService.logout();
+                  // Close dialog
+                  Navigator.pop(context);
+                  // Navigate to login screen and remove all previous routes
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login', // Make sure you have this route defined in your app
+                    (route) => false,
+                  );
+                } catch (e) {
+                  // Show error message if logout fails
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Logout failed: ${e.toString()}'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthStatus();
+  }
+
+  Future<void> _checkAuthStatus() async {
+    final isLoggedIn = await _authService.isLoggedIn();
+    if (!isLoggedIn) {
+      // If not logged in, navigate to login screen
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/login',
+        (route) => false,
+      );
+    }
   }
 
   @override
@@ -35,73 +103,95 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Colors.blue.shade900, Colors.blue.shade600],
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
                 children: [
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 35, color: Colors.blue),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Study Hub',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.blue.shade900, Colors.blue.shade600],
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.white,
+                          child:
+                              Icon(Icons.person, size: 35, color: Colors.blue),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Study Hub',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Virtual Learning Space',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    'Virtual Learning Space',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 16,
-                    ),
+                  ListTile(
+                    leading: const Icon(Icons.home),
+                    title: const Text('Home'),
+                    onTap: () => _selectScreen(const _WelcomeScreen()),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.group),
+                    title: const Text('Study Rooms'),
+                    onTap: () => _selectScreen(const StudyRoom()),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.calendar_today),
+                    title: const Text('Upcoming'),
+                    onTap: () => _selectScreen(const Upcoming()),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.fitness_center),
+                    title: const Text('Activity'),
+                    onTap: () => _selectScreen(const Activity()),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.announcement),
+                    title: const Text('Announcements'),
+                    onTap: () => _selectScreen(const Announcements()),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.menu_book),
+                    title: const Text('Programming Courses'),
+                    onTap: () => _selectScreen(const SubjectsScreen()),
                   ),
                 ],
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () => _selectScreen(const _WelcomeScreen()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.group),
-              title: const Text('Study Rooms'),
-              onTap: () => _selectScreen(const StudyRoom()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.calendar_today),
-              title: const Text('Upcoming'),
-              onTap: () => _selectScreen(const Upcoming()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.fitness_center),
-              title: const Text('Activity'),
-              onTap: () => _selectScreen(const Activity()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.announcement),
-              title: const Text('Announcements'),
-              onTap: () => _selectScreen(const Announcements()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.menu_book),
-              title: const Text('Programming Courses'),
-              onTap: () => _selectScreen(const SubjectsScreen()),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+              child: ListTile(
+                leading: const Icon(Icons.logout, color: Colors.red),
+                title: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.red),
+                ),
+                onTap: _handleLogout,
+              ),
             ),
           ],
         ),
@@ -115,7 +205,7 @@ class _DashboardState extends State<Dashboard> {
 }
 
 class _WelcomeScreen extends StatelessWidget {
-  const _WelcomeScreen({super.key});
+  const _WelcomeScreen();
 
   @override
   Widget build(BuildContext context) {
@@ -202,65 +292,15 @@ class _WelcomeScreen extends StatelessWidget {
                     crossAxisCellCount: 2,
                     mainAxisCellCount: 1,
                     child: _DashboardCard(
-                      title: 'Programming',
-                      subtitle: '8 Courses',
-                      icon: Icons.code,
-                      color: Colors.purple,
+                      title: 'Announcements',
+                      subtitle: 'New Updates',
+                      icon: Icons.announcement,
+                      color: Colors.red,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const SubjectsScreen()),
+                            builder: (context) => const Announcements()),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            FadeInUp(
-              delay: const Duration(milliseconds: 200),
-              duration: const Duration(milliseconds: 1000),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Latest Announcements',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        _AnnouncementItem(
-                          title: 'New Study Room Feature',
-                          description:
-                              'Share your screen during study sessions',
-                          date: 'Today',
-                          icon: Icons.new_releases,
-                        ),
-                        const Divider(height: 1),
-                        _AnnouncementItem(
-                          title: 'Upcoming Maintenance',
-                          description: 'System update scheduled for tomorrow',
-                          date: 'Yesterday',
-                          icon: Icons.engineering,
-                        ),
-                      ],
                     ),
                   ),
                 ],
@@ -274,12 +314,6 @@ class _WelcomeScreen extends StatelessWidget {
 }
 
 class _DashboardCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
   const _DashboardCard({
     required this.title,
     required this.subtitle,
@@ -288,91 +322,39 @@ class _DashboardCard extends StatelessWidget {
     required this.onTap,
   });
 
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.all(20),
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        color: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: color),
-              const SizedBox(height: 12),
+              Icon(icon, size: 40, color: Colors.white),
+              const SizedBox(height: 8),
               Text(
                 title,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
               const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
-                ),
-              ),
+              Text(subtitle, style: TextStyle(color: Colors.white)),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AnnouncementItem extends StatelessWidget {
-  final String title;
-  final String description;
-  final String date;
-  final IconData icon;
-
-  const _AnnouncementItem({
-    required this.title,
-    required this.description,
-    required this.date,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ),
-      leading: CircleAvatar(
-        backgroundColor: Colors.blue.shade100,
-        child: Icon(icon, color: Colors.blue.shade900),
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      subtitle: Text(description),
-      trailing: Text(
-        date,
-        style: TextStyle(
-          color: Colors.grey[600],
-          fontSize: 12,
         ),
       ),
     );

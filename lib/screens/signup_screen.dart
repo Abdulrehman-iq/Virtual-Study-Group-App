@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:virtual_study_group_app/auth_service/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key? key}) : super(key: key);
+  const SignupScreen({super.key});
 
   @override
   _SignupScreenState createState() => _SignupScreenState();
