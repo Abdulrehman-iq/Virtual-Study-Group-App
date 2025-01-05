@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-// Modify the model to handle trivia questions
 class ProgrammingNote {
   final String question;
   final List<String> options;
@@ -15,46 +14,17 @@ class ProgrammingNote {
   });
 
   factory ProgrammingNote.fromJson(Map<String, dynamic> json) {
+    List<String> allOptions =
+        List<String>.from(json['incorrect_answers'] ?? []);
+    String correctAnswer = json['correct_answer'] ?? 'No answer available';
+    allOptions.add(correctAnswer);
+    allOptions.shuffle();
+
     return ProgrammingNote(
       question: json['question'] ?? 'No question available',
-      options: List<String>.from(json['incorrect_answers'] ?? []),
-      correctAnswer: json['correct_answer'] ?? 'No correct answer available',
+      options: allOptions,
+      correctAnswer: correctAnswer,
     );
-  }
-}
-
-class OpenAIService {
-  final String apiKey;
-
-  OpenAIService({required this.apiKey});
-
-  Future<String> fetchExplanation(String prompt) async {
-    final url = Uri.parse('https://api.openai.com/v1/completions');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $apiKey',
-    };
-
-    final body = json.encode({
-      'model':
-          'text-davinci-003', // You can use other models such as 'gpt-3.5-turbo'
-      'prompt': prompt,
-      'max_tokens': 150,
-      'temperature': 0.7,
-    });
-
-    try {
-      final response = await http.post(url, headers: headers, body: body);
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data['choices'][0]['text'].trim(); // Return the generated text
-      } else {
-        throw Exception('Failed to load response: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error fetching explanation: $e');
-    }
   }
 }
 
@@ -70,13 +40,6 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
   bool hasError = false;
   String errorMessage = '';
   List<ProgrammingNote> notes = [];
-  Map<int, String> explanations =
-      {}; // Map to store explanations for each question
-
-  final String openAIKey =
-      'your-openai-api-key'; // Replace with your OpenAI API key
-  final OpenAIService openAIService =
-      OpenAIService(apiKey: 'your-openai-api-key'); // Initialize OpenAI service
 
   @override
   void initState() {
@@ -86,7 +49,6 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
 
   Future<void> _fetchProgrammingNotes() async {
     try {
-      // Open Trivia Database API to fetch programming trivia questions
       final response = await http.get(Uri.parse(
         'https://opentdb.com/api.php?amount=10&category=18&type=multiple',
       ));
@@ -100,135 +62,146 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
               results.map((item) => ProgrammingNote.fromJson(item)).toList();
           isLoading = false;
         });
-
-        // Fetch explanations from OpenAI for each question
-        _fetchExplanationsForQuestions();
       } else {
         setState(() {
           isLoading = false;
           hasError = true;
-          errorMessage =
-              'Error loading data (Status Code: ${response.statusCode})';
+          errorMessage = 'Failed to load data (${response.statusCode})';
         });
       }
     } catch (e) {
       setState(() {
         isLoading = false;
         hasError = true;
-        errorMessage = 'Error fetching data: $e';
+        errorMessage = 'Error: $e';
       });
-    }
-  }
-
-  Future<void> _fetchExplanationsForQuestions() async {
-    for (int i = 0; i < notes.length; i++) {
-      try {
-        String prompt =
-            "Explain the following programming question: ${notes[i].question}";
-        String explanation = await openAIService.fetchExplanation(prompt);
-
-        setState(() {
-          explanations[i] = explanation;
-        });
-      } catch (e) {
-        setState(() {
-          explanations[i] = 'Error fetching explanation: $e';
-        });
-      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Programming Trivia with Explanations'),
+        title: const Text('Programming Concepts'),
         elevation: 0,
+        backgroundColor: Colors.blue.shade50,
+        foregroundColor: Colors.black87,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : hasError
-              ? Center(child: Text(errorMessage))
-              : GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: notes.length,
-                  itemBuilder: (context, index) {
-                    final note = notes[index];
-                    return Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          // Handle tap if needed
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                note.question,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              ...note.options.map((option) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 4),
-                                    child: Text(
-                                      option,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey[700],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.blue.shade50, Colors.white],
+          ),
+        ),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : hasError
+                ? Center(child: Text(errorMessage))
+                : GridView.builder(
+                    padding: EdgeInsets.all(isMobile ? 12 : 16),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: isMobile ? 1 : 2,
+                      childAspectRatio: isMobile ? 1.5 : 1.2,
+                      crossAxisSpacing: isMobile ? 12 : 16,
+                      mainAxisSpacing: isMobile ? 12 : 16,
+                    ),
+                    itemCount: notes.length,
+                    itemBuilder: (context, index) {
+                      final note = notes[index];
+                      return Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(15),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(note.question),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Options:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
                                       ),
+                                      const SizedBox(height: 8),
+                                      ...note.options.map((option) => Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 4),
+                                            child: Text('• $option'),
+                                          )),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Correct Answer: ${note.correctAnswer}',
+                                        style: const TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Close'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  note.question,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'Tap to view details',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.blue.shade700,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(
+                                      Icons.info_outline,
+                                      color: Colors.blue.shade300,
                                     ),
-                                  )),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Correct Answer: ${note.correctAnswer}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Display the explanation if it's available
-                              explanations.containsKey(index)
-                                  ? Text(
-                                      'Explanation: ${explanations[index]}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.blue,
-                                      ),
-                                    )
-                                  : const CircularProgressIndicator(),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
+      ),
     );
   }
-}
-
-void main() {
-  runApp(const MaterialApp(
-    home: SubjectsScreen(),
-  ));
 }
