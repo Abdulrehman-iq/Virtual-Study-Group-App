@@ -59,7 +59,7 @@ class OpenAIService {
 }
 
 class SubjectsScreen extends StatefulWidget {
-  const SubjectsScreen({Key? key}) : super(key: key);
+  const SubjectsScreen({super.key});
 
   @override
   State<SubjectsScreen> createState() => _SubjectsScreenState();
@@ -228,7 +228,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: SubjectsScreen(),
   ));
 }

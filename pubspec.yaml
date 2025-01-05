@@ -11,6 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  animate_do: ^3.0.2
+  
   
   # Database
   sqflite: ^2.3.0

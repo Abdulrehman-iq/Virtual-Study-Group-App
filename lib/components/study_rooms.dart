@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -12,12 +13,14 @@ class ChatMessage {
   final String content;
   final String sender;
   final DateTime timestamp;
+  final bool isBase64;
 
   ChatMessage({
     required this.type,
     required this.content,
     required this.sender,
     required this.timestamp,
+    this.isBase64 = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -25,6 +28,7 @@ class ChatMessage {
         'content': content,
         'sender': sender,
         'timestamp': timestamp.toIso8601String(),
+        'isBase64': isBase64,
       };
 
   static ChatMessage fromJson(Map<String, dynamic> json) {
@@ -35,6 +39,7 @@ class ChatMessage {
       content: json['content'],
       sender: json['sender'],
       timestamp: DateTime.parse(json['timestamp']),
+      isBase64: json['isBase64'] ?? false,
     );
   }
 }
@@ -58,13 +63,9 @@ class _StudyRoomState extends State<StudyRoom> {
     _loadData();
   }
 
-  // ---------------------------
-  // SharedPreferences Operations
-  // ---------------------------
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Load messages
     final savedMessages = prefs.getStringList('messages') ?? [];
     _messages.clear();
     for (var msgJson in savedMessages) {
@@ -72,7 +73,6 @@ class _StudyRoomState extends State<StudyRoom> {
       _messages.add(ChatMessage.fromJson(jsonMap));
     }
 
-    // Load notes
     final savedNotes = prefs.getStringList('notes') ?? [];
     _notes.clear();
     _notes.addAll(savedNotes);
@@ -92,23 +92,37 @@ class _StudyRoomState extends State<StudyRoom> {
     await prefs.setStringList('notes', _notes);
   }
 
-  // ---------------------------
-  // UI Actions
-  // ---------------------------
   Future<void> _pickAndShareImage() async {
     final picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      setState(() {
-        _messages.add(
-          ChatMessage(
-            type: MessageType.image,
-            content: image.path,
-            sender: "User",
-            timestamp: DateTime.now(),
-          ),
-        );
-      });
+      if (kIsWeb) {
+        final bytes = await image.readAsBytes();
+        final base64Image = base64Encode(bytes);
+        setState(() {
+          _messages.add(
+            ChatMessage(
+              type: MessageType.image,
+              content: base64Image,
+              sender: "User",
+              timestamp: DateTime.now(),
+              isBase64: true,
+            ),
+          );
+        });
+      } else {
+        setState(() {
+          _messages.add(
+            ChatMessage(
+              type: MessageType.image,
+              content: image.path,
+              sender: "User",
+              timestamp: DateTime.now(),
+              isBase64: false,
+            ),
+          );
+        });
+      }
       await _saveMessages();
     }
   }
@@ -145,9 +159,6 @@ class _StudyRoomState extends State<StudyRoom> {
     await _saveNotes();
   }
 
-  // ---------------------------
-  // Build Method
-  // ---------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,10 +216,17 @@ class _StudyRoomState extends State<StudyRoom> {
                                   else
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
-                                      child: Image.file(
-                                        File(message.content),
-                                        width: 200,
-                                      ),
+                                      child: message.isBase64
+                                          ? Image.memory(
+                                              base64Decode(message.content),
+                                              width: 200,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.file(
+                                              File(message.content),
+                                              width: 200,
+                                              fit: BoxFit.cover,
+                                            ),
                                     ),
                                   const SizedBox(height: 4),
                                   Text(
