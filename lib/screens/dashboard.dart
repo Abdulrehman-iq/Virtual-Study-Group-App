@@ -217,7 +217,7 @@ class _WelcomeScreen extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: isMobile ? 10 : 20),
                 child: Text(
-                  'Welcome Back!',
+                  'Virtual Group Study ',
                   style: TextStyle(
                     fontSize: isMobile ? 24 : 32,
                     fontWeight: FontWeight.bold,
@@ -237,16 +237,19 @@ class _WelcomeScreen extends StatelessWidget {
                   StaggeredGridTile.count(
                     crossAxisCellCount: 2,
                     mainAxisCellCount: 1,
-                    child: _DashboardCard(
-                      title: 'Study Rooms',
-                      subtitle: '5 Active Sessions',
-                      icon: Icons.groups,
-                      color: Colors.indigo.shade100,
-                      textColor: Colors.indigo.shade900,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const StudyRoom(),
+                    child: ZoomIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: _DashboardCard(
+                        title: 'Study Rooms',
+                        subtitle: ' Sessions',
+                        icon: Icons.groups,
+                        color: Colors.indigo.shade100,
+                        textColor: Colors.indigo.shade900,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const StudyRoom(),
+                          ),
                         ),
                       ),
                     ),
@@ -254,16 +257,19 @@ class _WelcomeScreen extends StatelessWidget {
                   StaggeredGridTile.count(
                     crossAxisCellCount: 2,
                     mainAxisCellCount: 1,
-                    child: _DashboardCard(
-                      title: 'Upcoming Events',
-                      subtitle: '3 Today',
-                      icon: Icons.event,
-                      color: Colors.orange.shade100,
-                      textColor: Colors.orange.shade900,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Upcoming(),
+                    child: ZoomIn(
+                      duration: const Duration(milliseconds: 600),
+                      child: _DashboardCard(
+                        title: 'Upcoming Events',
+                        subtitle: 'Check Events',
+                        icon: Icons.event,
+                        color: Colors.orange.shade100,
+                        textColor: Colors.orange.shade900,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Upcoming(),
+                          ),
                         ),
                       ),
                     ),
@@ -271,16 +277,19 @@ class _WelcomeScreen extends StatelessWidget {
                   StaggeredGridTile.count(
                     crossAxisCellCount: 2,
                     mainAxisCellCount: 1,
-                    child: _DashboardCard(
-                      title: 'Announcements',
-                      subtitle: 'New Updates',
-                      icon: Icons.announcement,
-                      color: Colors.pink.shade100,
-                      textColor: Colors.pink.shade900,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Announcements(),
+                    child: ZoomIn(
+                      duration: const Duration(milliseconds: 700),
+                      child: _DashboardCard(
+                        title: 'Announcements',
+                        subtitle: 'New Updates',
+                        icon: Icons.announcement,
+                        color: Colors.pink.shade100,
+                        textColor: Colors.pink.shade900,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Announcements(),
+                          ),
                         ),
                       ),
                     ),
@@ -288,16 +297,19 @@ class _WelcomeScreen extends StatelessWidget {
                   StaggeredGridTile.count(
                     crossAxisCellCount: 2,
                     mainAxisCellCount: 1,
-                    child: _DashboardCard(
-                      title: 'Programming Courses',
-                      subtitle: 'Explore Subjects',
-                      icon: Icons.menu_book,
-                      color: Colors.green.shade100,
-                      textColor: Colors.green.shade900,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SubjectsScreen(),
+                    child: ZoomIn(
+                      duration: const Duration(milliseconds: 800),
+                      child: _DashboardCard(
+                        title: 'Programming Courses',
+                        subtitle: 'Explore Subjects',
+                        icon: Icons.menu_book,
+                        color: Colors.green.shade100,
+                        textColor: Colors.green.shade900,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SubjectsScreen(),
+                          ),
                         ),
                       ),
                     ),

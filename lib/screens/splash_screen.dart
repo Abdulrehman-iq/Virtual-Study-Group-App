@@ -25,18 +25,18 @@ class SplashScreen extends StatelessWidget {
       _checkLoginStatus(context);
     });
 
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.school,
               size: 100,
               color: Colors.blue,
             ),
-            const SizedBox(height: 20),
-            const Text(
+            SizedBox(height: 20),
+            Text(
               'Virtual Study App',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
