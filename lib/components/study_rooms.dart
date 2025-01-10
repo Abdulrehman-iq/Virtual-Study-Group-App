@@ -165,7 +165,7 @@ class _StudyRoomState extends State<StudyRoom> {
       appBar: AppBar(
         title: const Text('Study Room'),
         elevation: 0,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.blue.shade50,
       ),
       body: Container(
         color: Colors.grey[100],

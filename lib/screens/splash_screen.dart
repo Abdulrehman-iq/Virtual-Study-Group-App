@@ -1,4 +1,3 @@
-// screens/splash_screen.dart
 import 'package:flutter/material.dart';
 import '/auth_service/auth_service.dart';
 
@@ -9,21 +8,20 @@ class SplashScreen extends StatelessWidget {
     final authService = AuthService();
     final bool isLoggedIn = await authService.isLoggedIn();
 
+    await Future.delayed(const Duration(seconds: 3));
+
     if (isLoggedIn) {
-      // Navigate to the Dashboard if logged in
+      // If logged in, navigate to the Dashboard
       Navigator.pushReplacementNamed(context, '/dashboard');
     } else {
-      // Navigate to the Login screen if not logged in
+      // If not logged in, navigate to the Login screen
       Navigator.pushReplacementNamed(context, '/login');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Delay for a few seconds to show the splash screen before navigating
-    Future.delayed(const Duration(seconds: 3), () {
-      _checkLoginStatus(context);
-    });
+    _checkLoginStatus(context);
 
     return const Scaffold(
       body: Center(

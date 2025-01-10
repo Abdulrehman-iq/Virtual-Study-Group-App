@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/dashboard.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
-import 'screens/splash_screen.dart'; // Import the SplashScreen
+import 'screens/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,10 +19,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/', // Keep the splash screen as initial route
+      initialRoute: '/',
       routes: {
-        '/': (context) =>
-            const SplashScreen(), // Set splash screen as the first screen
+        '/': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
         '/dashboard': (context) => const Dashboard(),

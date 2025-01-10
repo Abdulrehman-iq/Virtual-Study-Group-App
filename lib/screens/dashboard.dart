@@ -89,10 +89,6 @@ class _DashboardState extends State<Dashboard> {
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        actions: [
-          IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.person), onPressed: () {}),
-        ],
       ),
       drawer: Drawer(
         child: Column(
@@ -158,7 +154,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   ListTile(
                     leading: const Icon(Icons.menu_book),
-                    title: const Text('Programming Courses'),
+                    title: const Text('Programming Blogs'),
                     onTap: () => _selectScreen(const SubjectsScreen()),
                   ),
                 ],
@@ -278,26 +274,6 @@ class _WelcomeScreen extends StatelessWidget {
                     crossAxisCellCount: 2,
                     mainAxisCellCount: 1,
                     child: ZoomIn(
-                      duration: const Duration(milliseconds: 700),
-                      child: _DashboardCard(
-                        title: 'Announcements',
-                        subtitle: 'New Updates',
-                        icon: Icons.announcement,
-                        color: Colors.pink.shade100,
-                        textColor: Colors.pink.shade900,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Announcements(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  StaggeredGridTile.count(
-                    crossAxisCellCount: 2,
-                    mainAxisCellCount: 1,
-                    child: ZoomIn(
                       duration: const Duration(milliseconds: 800),
                       child: _DashboardCard(
                         title: 'Programming Courses',
@@ -309,6 +285,26 @@ class _WelcomeScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => const SubjectsScreen(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  StaggeredGridTile.count(
+                    crossAxisCellCount: 2,
+                    mainAxisCellCount: 1,
+                    child: ZoomIn(
+                      duration: const Duration(milliseconds: 700),
+                      child: _DashboardCard(
+                        title: 'Announcements',
+                        subtitle: 'New Updates',
+                        icon: Icons.announcement,
+                        color: Colors.pink.shade100,
+                        textColor: Colors.pink.shade900,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Announcements(),
                           ),
                         ),
                       ),
